@@ -15,7 +15,7 @@ let genIdStu = 0;
 
 
 class Student {
-  constructor (name, lastName, status, courses=[], display="") {
+  constructor (name, lastName, status, courses=[]) {
     this.name = name;
     this.lastName = lastName;
     this.status = status;
@@ -29,7 +29,7 @@ class Student {
 
 
 class Course {
-  constructor (name, duration, students=[], display="") {
+  constructor (name, duration, students=[]) {
     this.name = name;
     this.duration = duration;
     this.students = students;
