@@ -1,3 +1,5 @@
+const coursesUrl = "https://code-the-dream-school.github.io/JSONStudentsApp.github.io/Courses.json";
+const studentsUrl = "https://code-the-dream-school.github.io/JSONStudentsApp.github.io/Students.json";
 let studentsButton = document.querySelector("#students");
 let coursesButton = document.querySelector("#courses");
 let showInfo = document.querySelector("#show-info");
@@ -42,7 +44,7 @@ class Course {
 
 
 const getCourses = () => {
-  fetch("https://code-the-dream-school.github.io/JSONStudentsApp.github.io/Courses.json")
+  fetch(coursesUrl)
   .then(response => response.json())
   .then(data => {
     data.forEach(course => {
@@ -55,7 +57,7 @@ const getCourses = () => {
 
 
 const getStudents = () => {
-  fetch("https://code-the-dream-school.github.io/JSONStudentsApp.github.io/Students.json")
+  fetch(studentsUrl)
   .then(response => response.json())
   .then(data => {
     data.forEach(student => {
@@ -84,7 +86,9 @@ const generateStudentsDropdown = () => {
   studentsDropdown += `</select>`;
 }
 
-
+/**
+ * 
+ */
 const generateCourses = () => {
   let coursesDisplayed = Object.entries(courses).reduce((acc, course) => {
     let dropdrop = [];
@@ -142,12 +146,12 @@ const generateStudents = () => {
 
     return acc += `
       <div id="student${student[0]}" class="box p-3">
-        <h4>${student[1].name} ${student[1].lastName} <div class="circle ${student[1].status === true ? "green" : "red"}"></div></h4>      
+        <h4>${student[1].name} ${student[1].lastName} <div class="circle ${student[1].status ? "green" : "red"}"></div></h4>      
         <div>
           ${showCourses}
         </div>
         ${ddc}
-        <button class="btn btn-primary" onclick="editInfoButton(this)">Edit info</button>
+        <button class="btn btn-primary" onclick="editInfoButton(${student[0]})">Edit info</button>
       </div>
     `;
   }, "");
@@ -159,18 +163,18 @@ const generateStudents = () => {
   `;
 }
 
-
+/**Every time I want to display a modal */
 const displayModalContent = (info) => {
   modalContent.innerHTML = info;
   modalButton.click();
 }
 
 
-const editInfoButton = (element) => {
+const editInfoButton = (studentID) => {
   let fName = prompt("Enter your first name (keep blank to not do changes)");
   let lName = prompt("Enter your last name (keep blank to not do changes)");
-  if (fName) students[element.parentElement.id.split("student")[1]].name = fName;
-  if (lName) students[element.parentElement.id.split("student")[1]].lastName = lName;
+  if (fName) students[studentID].name = fName;
+  if (lName) students[studentID].lastName = lName;
 
   generateInfo()
   displayModalContent("Information updated successfuly")
@@ -222,13 +226,13 @@ const addCourse = (element) => {
   let studentId = element.parentElement.parentElement.id.split("student")[1];
   let courseId = element.value.split("course")[1];
   
-  if (students[studentId].courses.length < 4 && courses[courseId].students.length < 3 && students[studentId].status === true) {
+  if (students[studentId].courses.length < 4 && courses[courseId].students.length < 3 && students[studentId].status) {
 
     students[studentId].addCourse(courses[courseId]);
     generateInfo()
     showList("students");
     
-  } else if (students[studentId].status !== true) {
+  } else if (!students[studentId].status) {
     displayModalContent("This student can't add courses");
   } else if (students[studentId].courses.length >= 4) {
     displayModalContent("This student can't add more courses");
@@ -242,7 +246,7 @@ const addStudent = (element) => {
   let studentId = element.value.split("student")[1];
   let courseId = element.parentElement.parentElement.id.split("course")[1];
 
-  if (students[studentId].courses.length < 4 && courses[courseId].students.length < 3 && students[studentId].status === true) {
+  if (students[studentId].courses.length < 4 && courses[courseId].students.length < 3 && students[studentId].status) {
     
     courses[courseId].addStudent(students[studentId]);
     generateInfo()
@@ -251,7 +255,7 @@ const addStudent = (element) => {
 
   } else if (students[studentId].courses.length >= 4) {
     displayModalContent("This student can't add more courses")
-  } else if (students[studentId].status !== true) {
+  } else if (!students[studentId].status) {
     displayModalContent("This student can't add courses");
   } else {
     displayModalContent("This course has the maximum number of students allowed");
